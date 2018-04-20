@@ -1,0 +1,112 @@
+probe begin {
+	printf("samba flock monitoring Started (10 seconds)...\n")
+}
+
+#probe process("ctdbd").function("ctdb_control_dispatch").call
+#	,process("ctdbd").function("ctdb_control_db_transaction_start").call
+#{
+#printf("%s->%s\n", thread_indent(4), ppfunc());
+#	print_ubacktrace();
+#	exit();
+#}
+
+#probe process("/usr/sbin/ctdbd").statement("*@ctdb/server/ctdb_control.c:100")
+#probe process("/usr/sbin/ctdbd").statement("*@ctdb_control.c:100")
+#{
+#	print_ubacktrace();
+#	exit()
+#}
+
+#/usr/lib64/samba/libsamba-cluster-support-samba4.so
+
+#probe process("smbd").function("*")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_*")
+#
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_fetch_locked")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_fetch_locked_transaction")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_try_fetch_locked")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_parse_record")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_traverse")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_traverse_read")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_id")
+
+
+#,process("/usr/lib64/libsmbconf.so").function("dbwrap_watched*")
+probe process("/usr/lib64/libsmbconf.so").function("dbwrap_watched_transaction_commit*")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("brl_lock")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("do_lock")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("process_trans2")
+{
+printf("%s->%s\n", thread_indent(0), ppfunc());
+}
+
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("increment_posix_lock_count")
+probe process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_transaction_commit")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_store_transaction")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_delete_transaction")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_fetch_locked_persistent")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_get_seqnum")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_transaction_start")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_transaction_commit")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_transaction_cancel")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_delete")
+#,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_store")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("db_ctdb_fetch_locked")
+,process("/usr/lib64/samba/libsamba-cluster-support-samba4.so").function("fetch_locked_internal")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("get_share_mode_lock_internal")
+{
+#printf("%s->%s\n", thread_indent(0), ppfunc());
+}
+
+#,process("/usr/lib64/samba/libdbwrap-samba4.so").function("dbwrap_store")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("call_trans2setfilepathinfo")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("smbd_do_setfilepathinfo")
+probe process("/usr/lib64/samba/libsmbd-base-samba4.so").function("set_posix_lock_posix_flavour")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("smb_posix_open")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("smb_set_posix_lock")
+{
+#print_ubacktrace();
+#printf("%s->%s\n", thread_indent(0), ppfunc());
+}
+
+probe process("/usr/lib64/samba/libsmbd-base-samba4.so").function("call_trans2setfilepathinfo")
+{
+printf("%s->%s\n", thread_indent(0), ppfunc());
+}
+
+probe process("/usr/lib64/samba/libsmbd-base-samba4.so").function("smbd_do_setfilepathinfo")
+{
+printf("%s->%s\n", thread_indent(0), ppfunc());
+}
+
+
+
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("create_file_default")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("open_file_ntcreate")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("open_file")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("fd_open_atomic")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("fd_open")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("vfswrap_open")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("delay_for_oplock")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("schedule_defer_open")
+probe process("/usr/lib64/samba/libsmbd-base-samba4.so").function("smb_set_posix_lock")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("smb_posix_open")
+#,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("vfswrap_kernel_flock")
+#,process("/usr/lib64/libsmbconf.so").function("kernel_flock")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("set_posix_lock_posix_flavour")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("brl_lock_posix")
+,process("/usr/lib64/samba/libsmbd-base-samba4.so").function("increment_posix_lock_count")
+
+{
+printf("%s->%s\n", thread_indent(0), ppfunc());
+}
+
+probe process("/usr/lib64/samba/libsmbd-base-samba4.so").function("vfswrap_kernel_flock")
+{
+	print_ubacktrace();
+}
+
+#probe timer.ms(10000) {
+#	printf("timer out\n");
+#	exit()
+#}
